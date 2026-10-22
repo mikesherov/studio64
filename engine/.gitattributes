@@ -1,0 +1,24 @@
+# Set the default behavior, in case people don't have core.autocrlf set.
+# eol=lf: Windows checkouts are built in WSL (Studio 64's setup), where CRLF breaks the scripts
+* text=auto eol=lf
+
+# List text files in case git doesn't characterize correctly
+*.c text
+*.h text
+*.s text
+*.in text
+*.js text
+*.md text
+*.py text
+*.sh text
+*.ld text
+*.inc text
+*.txt text
+*.json text
+*.yaml text
+
+# Same for binary
+*.bin binary
+*.m64 binary
+*.png binary
+*.aiff binary
