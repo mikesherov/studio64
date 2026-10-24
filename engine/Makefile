@@ -508,8 +508,10 @@ else # Linux & other builds
   OBJDUMP := $(CROSS)objdump
 endif
 ifeq ($(HOST_OS)$(TARGET_WEB),Darwin1)
-  # macOS: Apple's cpp is not GNU cpp; the Emscripten SDK's clang preprocesses the same (text, level headers)
-  CPP := $(dir $(shell which emcc))../bin/clang -E -P -x c -Wno-trigraphs
+  # macOS: Apple's cpp is not GNU cpp; the Emscripten SDK's clang preprocesses the same (text, level
+  # headers). That clang has no usable default target ("clang --version" reports "Target: unknown")
+  # and refuses to run at all without one ("unknown target triple 'unknown'").
+  CPP := $(dir $(shell which emcc))../bin/clang --target=wasm32-unknown-emscripten -E -P -x c -Wno-trigraphs
 endif
 
 PYTHON := python3
