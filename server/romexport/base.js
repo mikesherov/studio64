@@ -356,9 +356,7 @@ function sourceFiles() {
   walk(ENGINE);
   // (the Sunshine characters' body list: the stand-in without the disc's, names and numbers only)
   files['src/studio/sms/gen/sms_bodies.h'] = fs.readFileSync(path.join(ENGINE, 'sms', 'stub', 'sms_bodies.h'), 'utf8');
-  // (with this decomp's names for what the engine's older decomp called otherwise)
-  const catalog = fs.readFileSync(path.join(ENGINE, 'gen', 'catalog.inc.c'), 'utf8')
-    .replace(/\b[A-Za-z_]\w*\b/g, (w) => RENAMES[w] || w);
+  const catalog = kitCatalog(fs.readFileSync(path.join(ENGINE, 'gen', 'catalog.inc.c'), 'utf8'));
   files['src/studio/gen/catalog.inc.c'] = catalog;
   // what the catalog names from the engine's own modules: weak, so modules not in the ROM are NULL
   const weak = new Set(catalog.match(/\b(bhv(Sms|Sg|Kt|Tk|Studio)\w*|(stv|tokyo|tk|sms|sg|kt)_\w+_(geo|dl)\w*|(stv|tokyo|tk|sms|sg|kt)_\w+)\b/g));
@@ -368,6 +366,14 @@ function sourceFiles() {
   }
   files['src/s64/s64_catalog_weak.inc'] = `// Made by server/romexport/base.js.\n${[...weak].sort().map((n) => `${/^bhv/.test(n) ? `extern const BehaviorScript ${n}[];\n` : ''}#pragma weak ${n}`).join('\n')}\n`;
   return files;
+}
+/** The object catalog as the base ROM has it: without the part only computers with a Super Mario
+ * Sunshine disc have (Sunshine never goes into a ROM; tools/gen_catalog.py writes that part last in
+ * each table, after a marker, so every other entry keeps its index), so it is the same on every
+ * computer; with this decomp's names for what the engine's older decomp called otherwise. */
+export function kitCatalog(text) {
+  return text.replace(/^ {4}\/\/ \(from here: only with a Super Mario Sunshine disc\)\n(?:(?!\};).*\n)*/gm, '')
+    .replace(/\b[A-Za-z_]\w*\b/g, (w) => RENAMES[w] || w);
 }
 export const FILES = sourceFiles();
 
